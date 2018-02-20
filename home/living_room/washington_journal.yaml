@@ -1,0 +1,30 @@
+input_select:
+  washington_journal_segments:
+    name: Washington Journal
+    options:
+      - None
+
+sensor:
+  platform: template
+  sensors:
+    washington_journal_number:
+      value_template: "{{ states.input_select.washington_journal_segments.state.split('.')[0] }}"
+
+input_datetime:
+  washington_journal:
+    name: Washington Journal
+    has_date: true
+    has_time: false
+    initial: states.sensor.date.state
+
+shell_command:
+  play_washington_journal: "/bin/bash /config/shell/get_wash.sh -s {{ states.sensor.washington_journal_number.state }} -d {{ states.input_datetime.washington_journal.attributes.timestamp | timestamp_custom('%m%d%Y') }}"
+  update_washington_journal: "/bin/bash /config/shell/get_wash.sh"
+
+automation:
+  - alias: Update Washington Journal Date
+    trigger:
+      platform: state
+      entity_id: input_datetime.washington_journal
+    action:
+      service: shell_command.update_washington_journal

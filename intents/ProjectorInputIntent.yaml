@@ -1,0 +1,13 @@
+async_action: True
+action:
+  - service_template: >
+      {% if input and input=='input one' or input=='HDMI one' or input=='Apple TV' %}
+        script.projector_hdmi_1_script
+      {% else %}
+        script.projector_hdmi_2_script
+      {% endif %}
+speech:
+  type: plain
+  text: >
+    {{ ["Okay","Alright","Will do"] | random }}, {{ [ "changing", "setting", "switching" ] | random }} video input{% if input %} to {% if input=='input one' or input=='HDMI one' or input=='Apple TV'%}input one{% else %}input two.{% endif %}{% endif %}
+

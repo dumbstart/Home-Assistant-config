@@ -1,0 +1,2 @@
+# shell_command:
+#   waze: '/usr/bin/curl -X POST -H "Content-Type: application/json" http://192.168.1.199:8123/api/services/shell_command/waze'

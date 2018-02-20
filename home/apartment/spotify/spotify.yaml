@@ -1,0 +1,27 @@
+script:
+  spotify_setup:
+    sequence:
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.spotify
+          source: "All Speakers"
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.spotify
+          volume_level: 0.4
+  spotify_wake_up:
+    sequence:
+      - service: script.spotify_setup
+      - service: media_player.play_media
+        data:
+          entity_id: media_player.spotify
+          media_content_type: playlist
+          media_content_id: spotify:user:rfxuibjdtxnka1j9fsul631q8:playlist:7ChZbe9SXZX6x5DjiTKqid
+  spotify_leave:
+    sequence:
+      - service: script.spotify_setup
+      - service: media_player.play_media
+        data:
+          entity_id: media_player.spotify
+          media_content_type: playlist
+          media_content_id: spotify:user/rfxuibjdtxnka1j9fsul631q8/playlist/6MovesFIwamB6GiMfsNgWk

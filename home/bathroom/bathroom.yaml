@@ -1,0 +1,23 @@
+automation:
+  - alias: Turn Off Bathroom Light
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.bathroom_occupancy
+        to: 'off'
+        for:
+          seconds: 60
+    action:
+      service: light.turn_off
+      data:
+        entity_id: light.bathroom
+
+binary_sensor:
+  - platform: template
+    sensors:
+      bathroom_occupancy:
+        value_template: "{{ is_state('input_boolean.bathroom_motion','on') }}"
+        delay_off:
+          minutes: 11
+  
+input_boolean:
+  bathroom_motion:

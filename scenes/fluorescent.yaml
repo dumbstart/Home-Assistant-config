@@ -1,0 +1,49 @@
+name: Fluorescent
+
+entities:
+  light.back_door:
+    state: off
+  light.bathroom:
+    state: on
+    brightness_pct: 100
+    color_temp: 307
+    transition: 2
+  light.couch:
+    state: on
+    brightness_pct: 100
+    color_temp: 307
+    transition: 2
+  light.desk:
+    state: on
+    brightness_pct: 100
+    color_temp: 280
+    transition: 2
+  light.entrance:
+    state: on
+    brightness_pct: 100
+    color_temp: 307
+    transition: 2
+  light.porch:
+    state: off
+  light.oven:
+    state: on
+    brightness_pct: 100
+    color_temp: 307
+    transition: 2
+  light.fridge:
+    state: on
+    brightness_pct: 100
+    color_temp: 277
+    transition: 5
+  light.right:
+    state: on
+    brightness_pct: 100
+    rgb_color: [244, 231, 161]
+    transition: 2
+  light.left:
+    state: on
+    brightness_pct: 100
+    rgb_color: [254, 221, 151]
+    transition: 2
+  light.portable:
+    state: off

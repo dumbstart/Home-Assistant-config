@@ -1,0 +1,16 @@
+  - name: !secret work_kelcie
+    latitude: !secret latitude_kelcie
+    longitude: !secret longitude_kelcie
+    radius: 300
+    track_ios: true
+  - name: !secret work_michael
+    latitude: !secret latitude_michael
+    longitude: !secret longitude_michael
+    radius: 400
+    track_ios: true
+  - name: "Home"
+    icon: mdi:home
+    latitude: !secret latitude_home
+    longitude: !secret longitude_home
+    radius: 200
+    track_ios: true

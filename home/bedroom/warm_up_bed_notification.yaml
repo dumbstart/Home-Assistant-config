@@ -1,0 +1,56 @@
+automation:
+  - alias: Notify Warm Up Bed Event WARM_YES
+    trigger:
+      - platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          actionName: WARM_YES
+    action:
+      - service: script.add_log
+        data:
+          entity: 'warm_up_bed'
+          info: 'WARM_YES'
+      - service: script.warm_up_bed
+  - alias: Notify Warm Up Bed Event WARM_NO
+    trigger:
+      - platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          actionName: WARM_NO
+    action:
+      - service: script.add_log
+        data:
+          entity: 'warm_up_bed'
+          info: 'WARM_NO'
+      - service: script.warm_up_bed_stop
+  - alias: Notify Warm Up Bed Event WARM_DELAY
+    trigger:
+      - platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          actionName: WARM_DELAY
+    action:
+      - service: script.warm_up_bed_stop
+      - service: script.add_log
+        data:
+          entity: 'warm_up_bed'
+          info: 'WARM_DELAY'
+      - service: timer.start
+        entity_id: timer.delay_warm_up_bed_timer
+  - alias: Notify Warm Up Bed Send
+    trigger:
+      - platform: time
+        at: '22:30:00'
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.delay_warm_up_bed_timer
+    action:
+      - service: script.warm_up_bed_prep
+      - service_template: notify.ios_michael_iphone
+        data:
+          title: "Warm Up Bed?"
+          message: "Would you like for me to begin warming up the bed?"
+          data:
+            push:
+              category: "warm_up_bed"

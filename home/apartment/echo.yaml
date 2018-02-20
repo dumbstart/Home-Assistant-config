@@ -1,0 +1,49 @@
+# script:
+#   read_polly_alert:
+#     sequence:
+#       - service: media_player.select_source
+#         data:
+#           entity_id: media_player.spotify
+#           source: 'Alexa Echo'
+#       - service: media_player.volume_set
+#         data:
+#           entity_id: media_player.spotify
+#           volume_level: 0.6
+#       - service: tts.amazon_polly_say
+#         data_template:
+#           entity_id: media_player.living_room
+#           message: "This is the message"
+#   read_alexa_alert:
+#     sequence:
+#       - service_template: "{% if is_state('media_player.living_room','off') %}media_player.turn_on{% else %}none{% endif %}"
+#         data:
+#           entity_id: media_player.living_room
+#       - service: media_player.volume_set
+#         data:
+#           entity_id: media_player.spotify
+#           volume_level: 0.6
+#       - service: shell_command.create_alexa_alert
+#         data:
+#           the_message: "This is the message"
+#           the_date: "{% if the_date %}{{ the_date }}{% else %}{{ (as_timestamp(states.sensor.date__time.last_changed) | int + 70) | timestamp_custom('%Y-%m-%d %H:%M') }}{% endif %}"
+# 
+# 
+# automation:
+#   - alias: Set Morning Alexa Alert
+#     trigger:
+#       platform: state
+#       entity_id: input_select.michael_daily_status
+#       to: 'Begin Morning'
+#     condition:
+#       condition: state
+#       entity_id: sensor.michael_days_till_work
+#       state: '0'
+#     action:
+#       service: script.read_alexa_alert
+#       data:
+#         the_message: "This is the message"
+#         the_date: "{{ states.input_datetime.time_michael_work.state }}"
+# 
+# shell_command:
+#   create_alexa_alert: curl -X POST -d "reminder={{ the_message }}" -d "date={% if the_date %}{{ the_date }}{% else %}{{ (as_timestamp(states.sensor.date__time.last_changed) | int + 70) | timestamp_custom('%Y-%m-%d %H:%M') }}{% endif %}" http://192.168.1.108:8091/alexa-reminders
+#   set_alexa_leave_alert: curl -X POST -d "reminder=Michael, it is time to leave for work" -d "date={{ states.input_datetime.time_michael_commute.state[:-3] }}" http://192.168.1.108:8091/alexa-reminders

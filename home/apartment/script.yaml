@@ -1,0 +1,7 @@
+script:
+  turn_on_sleep_timer:
+    sequence:
+      service: timer.start
+      data_template:
+        entity_id: "{% if is_state('media_player.bedroom_tv','on') %}timer.bedroom_timer{% else %}timer.projector_timer{% endif %}"
+        duration: 1800

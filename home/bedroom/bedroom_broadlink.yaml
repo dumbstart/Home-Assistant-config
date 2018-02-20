@@ -1,0 +1,31 @@
+switch:
+  - platform: broadlink
+    host: 192.168.1.166
+    mac: '34:ea:34:8f:86:73'
+    switches:
+      bedroom_tv_power:
+        friendly_name: "Bedroom TV Power"
+        command_on: "JgBQAAABJ5ETExITEhMSExITExMSExITEjgSOBI4EzYTNxM3EjgSOBITEhMSFBI3ExMTNhMTEjcTNxM3EjgTEhI4EhMTNxITEwAFJAABJkoTAA0FAAAAAAAAAAA="
+        command_off: "JgBQAAABJpITExITEhMSExITExMSExITEjgSOBI4EjgSNxM3EjgSOBMSEhMTExI3ExMSNxMTEjgSNxM3EjgSExI4EhMTNxITEwAFJAABJkoSAA0FAAAAAAAAAAA="
+      bedroom_tv_mute:
+        friendly_name: "Bedroom Mute"
+        command_on: "JgBQAAABJpITEhITEhQSExITEhMSExMTEjcTNxM3EjgSOBI4EjgSOBITEhMSExI4EhMSExMTEjgSNxM3EjgSExI4EzcSOBITEgAFJQABJUoTAA0FAAAAAAAAAAA="
+        command_off: "JgBQAAABJpITEhITEhQSExITEhMSExMTEjcTNxM3EjgSOBI4EjgSOBITEhMSExI4EhMSExMTEjgSNxM3EjgSExI4EzcSOBITEgAFJQABJUoTAA0FAAAAAAAAAAA="
+
+script:
+  bedroom_tv_volume_up_script:
+    alias: Bedroom TV Volume Up
+    sequence:
+      - service: switch.broadlink_send_packet_192_168_1_166
+        data:
+          packet:
+            - "JgBQAAABJpITExITEhMSExITExMSExITEjgSOBM3EjcTNxI4EjgSOBITEhMTNxI4ExISExMTEjgSNxM3EhMTExI4EjcTNxIUEgAFIwABJkoTAA0FAAAAAAAAAAA="
+            - "JgBQAAABJpITExITEhMSExITExMSExITEjgSOBM3EjcTNxI4EjgSOBITEhMTNxI4ExISExMTEjgSNxM3EhMTExI4EjcTNxIUEgAFIwABJkoTAA0FAAAAAAAAAAA="
+  bedroom_tv_volume_down_script:
+    alias: Bedroom TV Volume Down
+    sequence:
+      - service: switch.broadlink_send_packet_192_168_1_166
+        data:
+          packet:
+            - "JgBQAAABJpITExITEhMSExITExMSExITEjgSOBI4EjgSNxM3EjgSOBITEhMTNxM3EjgTEhMSEzcTNxM3EhMSExMTEjgTNhMTEgAFIwABJkoSAA0FAAAAAAAAAAA="
+            - "JgBQAAABJpITExITEhMSExITExMSExITEjgSOBI4EjgSNxM3EjgSOBITEhMTNxM3EjgTEhMSEzcTNxM3EhMSExMTEjgTNhMTEgAFIwABJkoSAA0FAAAAAAAAAAA="

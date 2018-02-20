@@ -1,0 +1,17 @@
+- platform: automatic
+  client_id: !secret auto_client
+  secret: !secret auto_secret
+  current_location: true
+- platform: nmap_tracker
+  hosts: 192.168.1.0/24
+  home_interval: 15
+  exclude:
+    - 192.168.1.167
+    - 192.168.1.111
+    - 192.168.1.247
+    - 192.168.1.241
+    - 192.168.1.106
+    - 192.168.1.109
+    - 192.168.1.130
+    - 192.168.1.212
+    - 192.168.1.1

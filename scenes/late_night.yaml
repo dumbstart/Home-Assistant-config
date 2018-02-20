@@ -1,0 +1,41 @@
+name: Late Night #scene.late_night
+
+entities:
+  light.porch: off
+  light.back_door: off
+  light.desk:
+    state: on
+    transition: 2
+    color_name: chocolate
+    brightness_pct: 20
+  light.couch:
+    state: on
+    transition: 2
+    color_name: chocolate
+    brightness_pct: 30
+  light.bedroom:
+    state: on
+    transition: 2
+    color_name: chocolate
+    brightness_pct: 30
+  light.portable: off
+  light.oven:
+    state: on
+    transition: 2
+    color_name: chocolate
+    brightness_pct: 30
+  light.fridge:
+    state: on
+    transition: 2
+    brightness_pct: 20
+    color_temp: 370
+  light.left:
+    state: on
+    transition: 5
+    brightness_pct: 30
+    color_temp: 370
+  light.right:
+    state: on
+    transition: 5
+    brightness_pct: 30
+    color_temp: 370

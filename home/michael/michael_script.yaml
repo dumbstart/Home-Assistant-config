@@ -1,0 +1,60 @@
+script:
+  michael_set_location_status:
+    sequence:
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.michael_location_status
+          option: "{% if is_state('binary_sensor.michael_work_occupancy','on') %}At Work{% elif is_state('device_tracker.michael_automatic','not_home') %}Away{% else %}At Home{% endif %}"
+  michael_call_out_update:
+    sequence:
+      - service: input_datetime.set_datetime
+        data_template:
+          entity_id: input_datetime.time_michael_call_out
+          date: "{{ (now() | string).split(' ')[0] }} 12:00:00"
+  michael_commute_notification:
+    sequence:
+      - service_template: notify.ios_michael_iphone
+        data_template:
+          title: "Time To Leave"
+          message: >
+            Michael {% if ( states.input_datetime.time_michael_work.attributes.timestamp | int - as_timestamp(states.sensor.uptime.last_changed) | int ) // 60 < 90 -%}
+            you work {% if is_state('sensor.michael_days_till_work','0') %}today{% elif is_state('sensor.michael_days_till_work','1') %}tomorrow{% else %}{{ states.input_datetime.time_michael_work.attributes.timestamp | timestamp_custom('%A') }}{% endif %} at {{ ((states.input_datetime.time_michael_work.attributes.timestamp) | timestamp_custom('%I:%M %p')).lstrip('0').replace(':00', '') }} and {{ [ "you will need to start driving by", "you will need to leave before" ] | random }} {{ (states.input_datetime.time_michael_commute.attributes.timestamp | timestamp_custom('%I:%M %p')).lstrip('0').replace(':00', '') }}.
+            {% else %}
+            {%- if ( states.input_datetime.time_michael_work.attributes.timestamp | int - as_timestamp(states.sensor.uptime.last_changed) | int ) // 60 > 10 %}
+            you need to {{ ["leave","start driving"] | random }} in the next {{ (states.input_datetime.time_michael_commute.attributes.timestamp | int - as_timestamp(states.sensor.uptime.last_changed) | int) // 60 }} to {{ (states.input_datetime.time_michael_commute.attributes.timestamp | int - as_timestamp(states.sensor.uptime.last_changed) | int  ) // 60 + 5 }} minutes to arrive on time for your {{ (states.input_datetime.time_michael_work.attributes.timestamp | timestamp_custom('%I:%M %p')).lstrip('0').replace(':00', '') }} shift. {{ ["The","Your"] | random }} {{ ["commute","drive","trip"] | random }} to {{ states('sensor.michael_destination') }} will take {{ states('sensor.michael_commute_length') | int }} to {{ states('sensor.michael_commute_length') | int + 5  }} minutes
+            {%- elif ( states.input_datetime.time_michael_work.attributes.timestamp | int - as_timestamp(states.sensor.uptime.last_changed) | int ) > 0 %}
+            you need to leave right now if you expect to clock in on time. {{ states('sensor.michael_destination') }} is {{ states('sensor.michael_commute_length') | int }} to {{ states('sensor.michael_commute_length') | int + 5  }} minutes away if you take {% if states.sensor.michael_work_waze.state %}{{ ((' '~states.sensor.michael_work_waze.attributes.street~' ') | replace(' S ', ' South ') | replace(' E ', ' East ') | replace(' N ', ' North ') | replace(' W ', ' West ')).lstrip(' ').rstrip(' ')  }}{% endif %}
+            {%- elif ( states.input_datetime.time_michael_work.attributes.timestamp | int - as_timestamp(states.sensor.uptime.last_changed) | int ) < 0 %}
+            you are already late for your {{ ((states.input_datetime.time_michael_work.attributes.timestamp) | timestamp_custom('%I:%M %p')).lstrip('0').replace(':00', '') }} shift. If you leave immediately you can be at {{ states('sensor.michael_destination') }} around {{ ((as_timestamp(now()) + ((states.sensor.michael_commute_length.state | int + 5) * 60) ) | timestamp_custom('%I:%M %p')).lstrip('0').replace(':00', '') }}
+            {% endif %}{%- if states.sensor.michael_work_waze.state %} if you take {{ ((' '~states.sensor.michael_work_waze.attributes.street~' ') | replace(' S ', ' South ') | replace(' E ', ' East ') | replace(' N ', ' North ') | replace(' W ', ' West ')).lstrip(' ').rstrip(' ')  }}{% endif %}
+            {%- endif %}.
+          data:
+            attachment:
+              content-type: jpeg
+            push:
+              category: camera
+            entity_id: camera.michael_traffic_camera
+  michael_work_update:
+    sequence:
+      - service: input_datetime.set_datetime
+        data_template:
+          entity_id: input_datetime.time_michael_work
+          date: "{% if states.calendar.michael_work_calendar.attributes.start_time is none %}{{ ((as_timestamp(now()) + (7*24*60*60)) | timestamp_local | string).split(' ')[0] }}{% else %}{{ states.calendar.michael_work_calendar.attributes.start_time.split(' ')[0] }}{% endif %}"
+          time: "{% if states.calendar.michael_work_calendar.attributes.start_time is none %}{{ ((as_timestamp(now()) + (7*24*60*60)) | timestamp_local | string).split(' ')[1] }}{% else %}{{ states.calendar.michael_work_calendar.attributes.start_time.split(' ')[1] }}{% endif %}"
+  michael_time_update:
+    sequence:
+      - service: input_datetime.set_datetime
+        data_template:
+          entity_id: input_datetime.time_michael_sleep
+          date: "{{ (states.input_datetime.time_michael_work.attributes.timestamp | int - 86400) | timestamp_custom('%Y-%m-%d', true) }}"
+          time: "23:00:00"
+      - service: input_datetime.set_datetime
+        data_template:
+          entity_id: input_datetime.time_michael_wake
+          date: "{{ states.input_datetime.time_michael_work.state.split(' ')[0] }}"
+          time: "{{ (states.input_datetime.time_michael_work.attributes.timestamp | int - 2640 - (states.sensor.michael_commute_length.state | int * 60 )) | timestamp_custom('%H:%M:%S', true) }}"
+      - service: input_datetime.set_datetime
+        data_template:
+          entity_id: input_datetime.time_michael_commute
+          date: "{{ states.input_datetime.time_michael_work.state.split(' ')[0] }}"
+          time: "{{ (states.input_datetime.time_michael_work.attributes.timestamp | int - 540 - (states.sensor.michael_commute_length.state | int * 60 )) | timestamp_custom('%H:%M:%S', true) }}"

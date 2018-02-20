@@ -1,0 +1,30 @@
+  - alias: Home Assistant Start
+    trigger:
+      platform: homeassistant
+      event: start
+    action:
+      - service: homeassistant.turn_on
+        data:
+          entity_id: group.all_automations
+      - service: shell_command.waze
+      - service: script.michael_set_location_status
+      - service: shell_command.nano_get_update
+      - service: device_tracker.see
+        data:
+          dev_id: "michael_automatic"
+          location_name: "home"
+  - alias: Home Assistant Finished Start
+    trigger:
+      platform: state
+      entity_id: sensor.uptime
+      to: '0.16'
+    action:
+      - service: script.michael_work_update
+  - alias: Turn Off Sleeping
+    trigger:
+      platform: time
+      at: '08:00:00'
+    action:
+      service: input_boolean.turn_off
+      data:
+        entity_id: input_boolean.sleeping

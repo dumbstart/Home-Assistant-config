@@ -1,0 +1,72 @@
+automation:
+  - alias: Turn Off Projector From Switch
+    trigger:
+      platform: state
+      entity_id: switch.projector_power
+      from: 'on'
+      to: 'off'
+    condition:
+      condition: state
+      entity_id: binary_sensor.projector_power_outlet
+      state: 'on'
+    action:
+      - service: script.projector_power_script
+
+  - alias: Turn On Projector Switch From Power
+    trigger:
+      platform: state
+      entity_id: binary_sensor.projector_power_outlet
+      from: 'off'
+      to: 'on'
+      for:
+        seconds: 5
+    condition:
+      - condition: state
+        entity_id: switch.projector_power
+        state: 'off'
+    action:
+      - service: switch.turn_on
+        data:
+          entity_id: switch.projector_power
+
+  - alias: Turn On Projector From Switch
+    trigger:
+      platform: state
+      entity_id: switch.projector_power
+      from: 'off'
+      to: 'on'
+      for:
+        seconds: 10
+    action:
+      - service: script.projector_hdmi_1_script
+      - delay:
+          seconds: 4
+      - service: media_player.turn_on
+        data:
+          entity_id: media_player.living_room
+      - service: script.apple_tv_menu
+  - alias: Turn Off Apple TV When Not In Use
+    trigger:
+      platform: state
+      entity_id: media_player.projector
+      from: 'on'
+      to: 'off'
+    action:
+      service: script.apple_tv_pause
+  - alias: Turn off projector when asleep
+    trigger:
+      - platform: template
+        value_template: >
+          {{ not is_state('sensor.eight_left_sleep_stage','awake') and not is_state('sensor.eight_right_sleep_stage','awake') }}
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.projector_timer
+    condition:
+      condition: state
+      entity_id: media_player.projector
+      state: 'on'
+    action:
+      - service: media_player.turn_off
+        data:
+          entity_id: media_player.projector

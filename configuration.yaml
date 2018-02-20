@@ -1,0 +1,117 @@
+homeassistant:
+  latitude: !secret latitude_home
+  longitude: !secret longitude_home
+  elevation: !secret elevation_home
+  unit_system: imperial
+  time_zone: America/Denver
+  customize: !include customize.yaml
+  packages: !include_dir_named home
+
+frontend:
+  javascript_version: es5
+
+config:
+
+http:
+  api_password: !secret homeassist_pass
+  base_url: !secret homeassistant_url
+  ssl_certificate: !secret homeassist_cert
+  ssl_key: !secret homeassist_key
+  login_attempts_threshold: 3
+  trusted_networks:
+    - 192.168.1.0/24
+  ip_ban_enabled: True
+
+discovery:
+  ignore:
+    - philips_hue
+
+scene: !include_dir_list scenes
+
+recorder:
+
+intent_script: !include_dir_named intents/
+
+history: !include hassio/history.yaml
+
+alexa:
+
+logbook: !include hassio/logbook.yaml
+
+logger:
+  default: debug
+  logs:
+    homeassistant.components.emulated_hue: error
+    homeassistant.components.recorder: error
+
+
+notify: !include hassio/notify.yaml
+
+zone: !include zones.yaml
+
+map:
+
+sun:
+
+device_tracker: !include device_trackers.yaml
+
+tts:
+  platform: amazon_polly
+  aws_access_key_id: !secret aws_access_key_id_pass
+  aws_secret_access_key: !secret aws_secret_access_key_pass
+  region_name: !secret aws_region
+  cache: true
+  cache_dir: tts
+
+cloud: !include hassio/cloud.yaml
+
+switch:
+  - platform: tplink
+    name: Outlet Pi
+    host: 192.168.1.234
+  - platform: tplink
+    name: Outlet Bedroom TV
+    host: 192.168.1.212
+  - platform: tplink
+    name: Outlet Projector
+    host: 192.168.1.247
+  - platform: tplink
+    name: Outlet Vacuum
+    host: 192.168.1.109
+
+hue:
+  bridges:
+    - host: 192.168.1.143
+      allow_hue_groups: true
+
+ios: !include hassio/ios_notifications.yaml
+
+group: !include groups.yaml
+
+automation: !include automations.yaml
+
+media_extractor:
+
+media_player:
+  - platform: spotify
+    client_id: !secret spotify_id
+    client_secret: !secret spotify_secret
+
+eight_sleep:
+  username: !secret eight_user
+  password: !secret eight_pass
+  partner: true
+
+ifttt:
+  key: !secret ifttt_key
+
+google:
+  client_id: !secret goid
+  client_secret: !secret gosecret
+  track_new_calendar: false
+
+apple_tv:
+  - host: 192.168.1.231
+    login_id: !secret apple_tv_id
+    name: Living Room
+    credentials: !secret apple_tv_cred

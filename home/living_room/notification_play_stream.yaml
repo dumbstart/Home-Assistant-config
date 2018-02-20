@@ -1,0 +1,41 @@
+automation:
+  - alias: Notify Video Stream Is Available
+    trigger:
+      platform: state
+      entity_id: media_player.living_room
+      to: 'playing'
+      for:
+        minutes: 1
+    condition:
+      condition: state
+      entity_id: input_boolean.apple_tv_stream_alert
+      state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.apple_tv_stream_alert
+      - service: notify.ios_michael_iphone
+        data_template:
+          title: 'Video Stream Available'
+          message: 'Would you like to watch "{{ states.sensor.stream_video.attributes.media_title }}"?'
+          data:
+            push:
+              category: "stream_video"
+  - alias: Video Stream Don't Play
+    trigger:
+      - platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          actionName: STREAM_NO
+    action:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.apple_tv_stream_video
+  - alias: Video Stream Play
+    trigger:
+      - platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          actionName: STREAM_YES
+    action:
+      - service: script.apple_tv_stream

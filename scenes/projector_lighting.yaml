@@ -1,0 +1,29 @@
+name: Projector Lighting
+entities: 
+  light.couch:
+    state: on
+    brightness: 60
+    xy_color: [0.4157, 0.3965]
+  light.desk:
+    state: on
+    brightness: 40
+    xy_color: [0.4154, 0.3963]
+  light.entrance:
+    state: on
+    brightness: 40
+    xy_color: [0.4154, 0.3963]
+  light.fridge:
+    state: on
+    brightness: 173
+  light.kitchen:
+    state: on
+    brightness: 173
+    xy_color: [0.4786, 0.3006]
+  light.left:
+    state: off
+  light.oven:
+    state: on
+    brightness: 60
+    xy_color: [0.4786, 0.3006]
+  light.right:
+    state: off

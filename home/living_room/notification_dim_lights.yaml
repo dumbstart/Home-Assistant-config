@@ -1,0 +1,44 @@
+automation:
+  - alias: Notify Dim TV lights event yes_dim
+    trigger:
+      - platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          actionName: DIM_YES
+    action:
+      - service: scene.turn_on
+        entity_id: scene.late_night
+  - alias: Notify Dim TV lights event no_dim
+    trigger:
+      - platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          actionName: DIM_NO
+    action:
+      - service: timer.start
+        entity_id: timer.delay_dim_lights_timer
+  - alias: Notification dim TV lights send
+    trigger:
+      platform: state
+      entity_id: media_player.apple_tv
+      to: 'playing'
+      for:
+        minutes: 1
+    condition:
+      - condition: sun
+        after: sunset
+      - condition: template
+        value_template: "{{ states.light.couch.attributes.brightness >= 60 }}"
+      - condition: state
+        entity_id: timer.delay_dim_lights_timer
+        state: idle
+    action:
+      - service: notify.ios_michael_iphone
+        data:
+          title: "Dim The lights?"
+          message: "Since it's late and you are watching television would you like the Apartment to turn down the living room lights?"
+          data:
+            push:
+              category: "dim_lights"
+      - service: timer.start
+        entity_id: timer.delay_dim_lights_timer

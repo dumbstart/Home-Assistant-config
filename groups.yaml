@@ -1,0 +1,72 @@
+michael_location:
+  view: no
+  name: Michael Location
+  entities:
+    - device_tracker.michael_iphone
+    - device_tracker.michael_automatic
+    - binary_sensor.michael_home_check
+    - sensor.michael_automatic_location
+    - sensor.michael_home_occupancy
+
+left_bed_group:
+  view: no
+  name: Left Side Of Bed
+  entities:
+    - sensor.eight_left_bed_state
+    - sensor.eight_left_bed_temperature
+    - sensor.eight_left_previous_sleep_session
+    - sensor.eight_left_sleep_session
+    - sensor.eight_left_sleep_stage
+    - binary_sensor.eight_left_bed_presence
+
+right_bed_group:
+  view: no
+  name: Right Side Of Bed
+  entities:
+    - binary_sensor.eight_right_bed_presence
+    - sensor.eight_right_bed_state
+    - sensor.eight_right_bed_temperature
+    - sensor.eight_right_previous_sleep_session
+    - sensor.eight_right_sleep_session
+    - sensor.eight_right_sleep_stage
+
+michael_commute:
+  view: no
+  name: Michael Commute Info
+  entities:
+    - binary_sensor.michael_automatic_status
+    - device_tracker.michael_automatic
+    - sensor.michael_commute_length
+    - sensor.michael_destination
+    - sensor.michael_work_waze
+
+echo_devices:
+  view: no
+  name: Amazon Echo
+  entities:
+    - device_tracker.34d270da7031
+    - device_tracker.amazonf0d88de34
+    - device_tracker.amazona1c43ac9b
+    - device_tracker.amazone60a25c10
+
+bedroom_group:
+  view: no
+  name: Bedroom
+  entities:
+    - sensor.eight_room_temperature
+    - binary_sensor.bedroom_tv_power_outlet
+    - device_tracker.e04f433ec87e
+    - device_tracker.amazonec6a3e22f
+
+michael_devices:
+  view: no
+  name: Michael Devices
+  entities:
+    - device_tracker.michael_ipad
+    - sensor.mehpad_pro_battery_level
+    - sensor.mehpad_pro_battery_state
+    - device_tracker.michael_iphone
+    - sensor.mehphone_battery_level
+    - sensor.mehphone_battery_state
+    - device_tracker.michaelplewatch
+    - device_tracker.michaelsipad

@@ -1,0 +1,29 @@
+name: Outside
+
+entities:
+  media_player.tv:
+    state: off
+  media_player.bedroom_tv:
+    state: off
+  light.porch:
+    state: on
+    brightness: 15
+  light.living_room:
+    state: off
+  light.bedroom:
+    state: off
+  light.fridge:
+    state: off
+  light.couch:
+    state: on
+    brightness: 86
+    rgb_color: [169, 155, 55]
+  light.oven:
+    state: on
+    brightness: 203
+    rgb_color: [249, 228, 85]
+  light.back_door:
+    state: on
+    brightness: 50
+  input_select.nanoleaf_effects:
+    state: Off

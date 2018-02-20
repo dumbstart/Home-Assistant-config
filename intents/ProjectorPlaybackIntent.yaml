@@ -1,0 +1,7 @@
+async_action: True
+speech:
+  type: plain
+  text: "Moving to next episode"
+action:
+  - service: script.apple_tv_right
+  - service: script.apple_tv_select

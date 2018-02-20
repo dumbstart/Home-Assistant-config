@@ -1,0 +1,36 @@
+name: Cloudy Sky
+
+entities:
+  light.couch:
+    state: on
+    brightness: 165
+    color_temp: 264
+    transition: 2
+  light.fridge:
+    state: on
+    brightness: 132
+    color_temp: 240
+    transition: 2
+  light.oven:
+    state: on
+    brightness: 160
+    color_temp: 220
+    transition: 2
+  light.desk:
+    state: on
+    brightness: 228
+    color_temp: 242
+    transition: 2
+  light.left:
+    state: on
+    brightness: 170
+    transition: 2
+  light.right:
+    state: on
+    brightness: 228
+    transition: 2
+  light.entrance:
+    state: on
+    brightness: 254
+    color_temp: 343
+    transition: 2

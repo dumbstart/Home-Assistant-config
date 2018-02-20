@@ -1,0 +1,62 @@
+media_player:
+  - platform: universal
+    name: Projector
+    children:
+      - media_player.living_room
+    commands:
+      turn_on:
+        service: switch.turn_on
+        data:
+          entity_id: switch.projector_power
+      turn_off:
+        service: switch.turn_off
+        data:
+          entity_id: switch.projector_power
+      volume_up:
+        service: script.turn_on
+        data:
+          entity_id: script.projector_volume_up
+      volume_down:
+        service: script.turn_on
+        data:
+          entity_id: script.projector_volume_down
+      volume_mute:
+        service: script.turn_on
+        data:
+          entity_id: script.projector_mute_script
+    attributes:
+      is_volume_muted: switch.projector_mute
+      state: switch.projector_power
+
+timer:
+  projector_timer:
+    duration: '00:45:00'
+  delay_dim_lights_timer:
+    duration: '00:60:00'
+
+
+binary_sensor:
+  - platform: template
+    sensors:
+      projector_power_outlet:
+        value_template: "{{ states.switch.outlet_projector.attributes.current_power_w | float > 50 }}"
+
+script:
+  projector_timer_script:
+    sequence:
+      service: timer.start
+      data:
+        entity_id: timer.projector_timer
+        duration: 1800
+  projector_volume_up:
+    sequence:
+      - service: script.projector_volume_up_script
+      - service: media_player.volume_up
+        data:
+          entity_id: media_player.spotify
+  projector_volume_down:
+    sequence:
+      - service: script.projector_volume_down_script
+      - service: media_player.volume_down
+        data:
+          entity_id: media_player.spotify

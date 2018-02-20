@@ -1,0 +1,49 @@
+name: Halogen
+entities: 
+  light.bathroom:     
+    state: on
+    brightness: 254
+    xy_color: [0.3201, 0.3361]
+  light.bed:     
+    state: on
+    brightness: 76
+    xy_color: [0.585, 0.385]
+  light.couch:     
+    state: on
+    brightness: 254
+    xy_color: [0.3199, 0.336]
+  light.desk:     
+    state: on
+    brightness: 254
+    xy_color: [0.3201, 0.3361]
+  light.entrance:     
+    state: on
+    brightness: 254
+    xy_color: [0.3201, 0.3361]
+  light.fridge:     
+    state: on
+    brightness: 51
+  light.kitchen:     
+    state: on
+    brightness: 51
+    xy_color: [0.3201, 0.3361]
+  light.left:     
+    state: on
+    brightness: 254
+    xy_color: [0.3183, 0.3362]
+  light.oven:     
+    state: on
+    brightness: 254
+    xy_color: [0.3201, 0.3361]
+  light.right:     
+    state: on
+    brightness: 254
+    xy_color: [0.3183, 0.3362]
+  light.shower:     
+    state: on
+    brightness: 254
+    xy_color: [0.3199, 0.336]
+  light.sink:     
+    state: on
+    brightness: 254
+    xy_color: [0.3201, 0.3361]

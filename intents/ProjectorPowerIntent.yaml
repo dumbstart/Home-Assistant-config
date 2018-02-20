@@ -1,0 +1,14 @@
+async_action: True
+action:
+  - service_template: >
+      {% if power=='on' %}
+        media_player.turn_on
+      {% else %}
+        media_player.turn_off
+      {% endif %}
+    data:
+      entity_id: media_player.projector
+speech:
+  type: plain
+  text: >
+    {{ ["Okay","Alright","Will do"] | random }}, {{ ["turning", "powering"] | random }} {{ power }} the projector.

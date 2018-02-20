@@ -1,0 +1,56 @@
+automation:
+  - alias: Update Michael Work Time
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: calendar.michael_work_calendar
+    action:
+      - service: script.michael_work_update
+  - alias: Update Michael Non-Work Time
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: sensor.michael_commute_length
+      - platform: state
+        entity_id: input_datetime.time_michael_work
+    condition:
+      condition: state
+      entity_id: script.michael_time_update
+      state: 'off'
+    action:
+      - service: script.michael_time_update
+  - alias: Update Location Of Michael iPhone
+    trigger:
+      - platform: template
+        value_template: "{{ states.device_tracker.michael_iphone.attributes.source_type is none }}"
+      - platform: template
+        value_template: "{{ ((as_timestamp(states.sensor.date__time.last_changed) | int -as_timestamp(states.sensor.mehphone_battery_state.last_changed)) // 60) | int > 55 }}"
+      - platform: template
+        value_template: "{{ ((as_timestamp(states.sensor.time.last_changed) - as_timestamp(states.device_tracker.michael_iphone.last_updated)) // 60 ) > 20 }}"
+    action:
+      service: device_tracker.see
+      data:
+        dev_id: "michael_iphone"
+  - alias: Update Location Of Michael iPad Pro
+    trigger:
+      - platform: template
+        value_template: "{{ states.device_tracker.michael_ipad.attributes.source_type is none }}"
+      - platform: template
+        value_template: "{{ ((as_timestamp(states.sensor.date__time.last_changed) | int -as_timestamp(states.sensor.mehpad_pro_battery_state.last_changed)) // 60) | int > 55 }}"
+      - platform: template
+        value_template: "{{ ((as_timestamp(states.sensor.time.last_changed) - as_timestamp(states.device_tracker.michael_ipad.last_changed)) // 60 ) > 20 }}"
+    action:
+      service: device_tracker.see
+      data:
+        dev_id: "michael_ipad"
+  - alias: Update Location Of Michael Automatic
+    trigger:
+      - platform: template
+        value_template: "{{ states.device_tracker.michael_automatic.attributes.source_type is none }}"
+    condition:
+      condition: template
+      value_template: "{{ ((as_timestamp(states.sensor.time.last_changed) - as_timestamp(states.device_tracker.michael_automatic.last_updated)) // 60 ) > 20 }}"
+    action:
+      service: device_tracker.see
+      data:
+        dev_id: "michael_automatic"

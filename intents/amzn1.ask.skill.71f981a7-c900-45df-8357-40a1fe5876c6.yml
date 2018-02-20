@@ -1,0 +1,8 @@
+async_action: True
+action:
+  - service: media_player.turn_on
+    data:
+      entity_id: media_player.projector
+speech:
+  type: plain
+  text: "This skill enables you to control your projector, you turn it on and off, adjust the volume, change the video input, set a timer to turn it off, control video playback and on-screen navigation."

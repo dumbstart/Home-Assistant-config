@@ -1,0 +1,12 @@
+async_action: True
+action:
+  - service_template: >
+      {% if direction=='up' or direction=='increase' or direction=='raise' or direction=='quiet' %}
+        media_player.volume_up
+      {% elif direction=='down' or direction=='decrease' or direction=='lower' or direction=='loud' %}
+        media_player.volume_down
+      {% elif direction=='mute' or direction=='off' %}
+        media_player.volume_mute
+      {% endif %}
+    data:
+      entity_id: media_player.projector

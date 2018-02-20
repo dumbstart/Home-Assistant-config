@@ -1,0 +1,27 @@
+name: Night Light
+
+entities:
+  light.television:
+    state: on
+    brightness: 21
+    color_temp: 447
+    transition: 2
+  light.kitchen:
+    state: on
+    brightness: 21
+    color_temp: 450
+    transition: 2
+  light.bedroom:
+    state: on
+    brightness: 50
+    transition: 2
+  light.entrance:
+    state: off
+  light.desk:
+    state: off
+  light.portable:
+    state: off
+  light.back_door:
+    state: off
+  light.porch:
+    state: off

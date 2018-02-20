@@ -1,0 +1,134 @@
+automation:
+  - alias: Michael Location Status Change
+    initial_state: True
+    trigger:
+      platform: state
+      entity_id: input_select.michael_location_status
+    action:
+      service: notify.ios_michael_iphone
+      data_template:
+        title: "Location Status set to {{ trigger.to_state.state }}"
+        message: "Status changed from {{ trigger.from_state.state }} to {{ trigger.to_state.state }} on {{ as_timestamp(now()) | int | timestamp_local }}."
+  - alias: Set Michael Status To Away
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: input_select.michael_location_status
+        to: 'Left Home'
+        for:
+          minutes: 2
+      - platform: state
+        entity_id: input_select.michael_location_status
+        to: 'Left Work'
+        for:
+          minutes: 2
+      - platform: state
+        entity_id: sensor.michael_automatic_location
+        to: 'not_home'
+        for:
+          minutes: 3
+    action:
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.michael_location_status
+          option: 'Away'
+
+  - alias: Set Michael Status To Left Home
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: binary_status.michael_home_occupancy
+        from: 'on'
+        to: 'off'
+        for:
+          minutes: 1
+    condition:
+      condition: state
+      entity_id: input_select.michael_location_status
+      state: 'At Home'
+    action:
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.michael_location_status
+          option: 'Left Home'
+
+  - alias: Set Michael Status To Left Work
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: sensor.michael_automatic_location
+        from: 'Fashion Place'
+        to: 'not_home'
+        for:
+          minutes: 1
+    action:
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.michael_location_status
+          option: 'Left Work'
+
+  - alias: Set Michael Status To Arrive At Work
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: sensor.michael_automatic_location
+        from: 'not_home'
+        to: 'Fashion Place'
+        for:
+          minutes: 1
+    action:
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.michael_location_status
+          option: 'Arrived At Work'
+
+  - alias: Set Michael Status To Arrive At Home
+    initial_state: True
+    trigger:
+      - platform: zone
+        entity_id: device_tracker.michael_automatic
+        zone: zone.home
+        event: enter
+      - platform: state
+        entity_id: binary_sensor.michael_home_occupancy
+        from: 'off'
+        to: 'on'
+        for:
+          minutes: 1
+    condition:
+      condition: state
+      entity_id: input_select.michael_location_status
+      state: 'Away'
+    action:
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.michael_location_status
+          option: 'Arrived At Home'
+
+  - alias: Set Michael Status To At Home
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: input_select.michael_location_status
+        to: 'Arrived At Home'
+        for:
+          minutes: 3
+    action:
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.michael_location_status
+          option: 'At Home'
+
+  - alias: Set Michael Status To At Work
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: input_select.michael_location_status
+        to: 'Arrived At Work'
+        for:
+          minutes: 3
+    action:
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.michael_location_status
+          option: 'At Work'

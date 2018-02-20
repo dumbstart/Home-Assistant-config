@@ -1,0 +1,9 @@
+action:
+  - service: timer.start
+    data_template:
+      entity_id: timer.projector_timer
+      duration: "{% if minutes %}{{ minutes * 60 }}{% else %}1800{% endif %}"
+speech:
+  type: plain
+  text: >
+    {{ ["Okay","Alright","Will do"] | random }}, I have started a {{ ["countdown", "timer", "tracker"] | random }} and will turn off the projector in {% if minutes %}{{ minutes }}{% else %}30{% endif %} minutes.

@@ -1,0 +1,12 @@
+automation:
+  - alias: Turn Off Basement Light
+    trigger:
+      - platform: state
+        entity_id: light.basement
+        to: 'on'
+        for:
+          minutes: 20
+    action:
+      service: light.turn_off
+      data:
+        entity_id: light.basement

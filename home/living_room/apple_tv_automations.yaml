@@ -1,0 +1,27 @@
+sensor:
+  - platform: template
+    sensors:
+      apple_tv_media_title:
+        friendly_name: "Apple TV Now Playing"
+        value_template: "{% if states.media_player.living_room.attributes.media_title != 'Establishing a connection to Living Room...' or states.media_player.living_room.attributes.media_title=='Nothing playing' %}idle{% else %}{{ states.media_player.living_room.attributes.media_title }}{% endif %}"
+
+automation:
+  - alias: Apple TV Log TV Show
+    trigger:
+      platform: state
+      entity_id: sensor.apple_tv_media_title
+    condition:
+      condition: and
+      conditions:
+        - condition: template
+          value_template: "{{ states.media_player.living_room.attributes.media_title != 'Nothing playing' }}"
+        - condition: template
+          value_template: "{{ states.media_player.living_room.attributes.media_title != 'Establishing a connection to Living Room...' }}"
+        - condition: state
+          entity_id: media_player.living_room
+          state: "playing"
+    action:
+      - service: ifttt.trigger
+        data_template:
+          event: "save_tv_show"
+          value1: "{{ trigger.to_state.state }}"

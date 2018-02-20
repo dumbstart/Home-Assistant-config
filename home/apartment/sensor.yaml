@@ -1,0 +1,14 @@
+sensor:
+  - platform: time_date
+    display_options:
+      - 'time'
+      - 'date'
+      - 'date_time'
+  - platform: uptime
+    name: Uptime
+    unit_of_measurement: hours
+
+input_boolean:
+  movement_alarm:
+    initial: off
+  sleeping:

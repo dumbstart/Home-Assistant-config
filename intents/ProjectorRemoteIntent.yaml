@@ -1,0 +1,11 @@
+async_action: True
+action:
+  - service_template: >
+      {% macro run_script(button) %}{% if button=='up' %}script.apple_tv_up{% elif button=='down' %}script.apple_tv_down{% elif button=='left' %}script.apple_tv_left{% elif button=='right' %}script.apple_tv_right{% elif button=='menu' %}script.apple_tv_menu{% elif button=='play' %}script.apple_tv_play{% elif button=='pause' %}script.apple_tv_pause{% elif button=='tv menu' %}script.apple_tv_top_menu{% elif button=='select' %}script.apple_tv_select{% endif %}{% endmacro %}
+      {{ run_script(button_one) }}
+  - service_template: >
+      {% macro run_script(button) %}{% if button=='up' %}script.apple_tv_up{% elif button=='down' %}script.apple_tv_down{% elif button=='left' %}script.apple_tv_left{% elif button=='right' %}script.apple_tv_right{% elif button=='menu' %}script.apple_tv_menu{% elif button=='play' %}script.apple_tv_play{% elif button=='pause' %}script.apple_tv_pause{% elif button=='tv menu' %}script.apple_tv_top_menu{% elif button=='select' %}script.apple_tv_select{% endif %}{% endmacro %}
+      {% if button_two %}{{ run_script(button_two) }}{% else %}None{% endif %}
+  - service_template: >
+      {% macro run_script(button) %}{% if button=='up' %}script.apple_tv_up{% elif button=='down' %}script.apple_tv_down{% elif button=='left' %}script.apple_tv_left{% elif button=='right' %}script.apple_tv_right{% elif button=='menu' %}script.apple_tv_menu{% elif button=='play' %}script.apple_tv_play{% elif button=='pause' %}script.apple_tv_pause{% elif button=='tv menu' %}script.apple_tv_top_menu{% elif button=='select' %}script.apple_tv_select{% endif %}{% endmacro %}
+      {% if button_three %}{{ run_script(button_three) }}{% else %}None{% endif %}

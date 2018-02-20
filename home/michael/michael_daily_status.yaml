@@ -1,0 +1,285 @@
+automation:
+  - alias: Michael Daily Status Change
+    initial_state: True
+    trigger:
+      platform: state
+      entity_id: input_select.michael_daily_status
+    action:
+      service: notify.ios_michael_iphone
+      data_template:
+        title: "Daily Status set to {{ trigger.to_state.state }}"
+        message: "Status changed from {{ trigger.from_state.state }} to {{ trigger.to_state.state }} on {{ as_timestamp(now()) | int | timestamp_local }}."
+  - alias: Michael Daily Status Begin Sleep Set
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.michael_sleep_set
+        from: 'off'
+        to: 'on'
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Begin Sleep"
+
+  - alias: Michael Daily Status Sleep Set From Sleeping
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: input_boolean.sleeping
+        from: 'off'
+        to: 'on'
+        for:
+          minutes: 2
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: 'Sleep'
+
+  - alias: Michael Daily Status Sleep Set
+    initial_state: True
+    trigger:
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.bedroom_timer
+      - platform: state
+        entity_id: binary_sensor.eight_right_bed_presence
+        from: 'off'
+        to: 'on'
+        for:
+          minutes: 10
+      - platform: state
+        entity_id: binary_sensor.eight_left_bed_presence
+        from: 'off'
+        to: 'on'
+        for:
+          minutes: 10
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: light.bedroom
+          state: 'off'
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: input_select.michael_daily_status
+              state: 'Begin Sleep'
+            - condition: state
+              entity_id: input_select.michael_daily_status
+              state: 'Evening'
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: 'Sleep'
+
+  - alias: Michael Daily Status Begin Morning Set
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.michael_wake_set
+        from: 'off'
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: input_select.michel_daily_status
+        state: "Sleep"
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Begin Morning"
+
+  - alias: Michael Daily Status Morning Set
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.occupancy_bathroom
+        from: 'off'
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.eight_left_bed_presence
+        from: 'on'
+        to: 'off'
+      - platform: state
+        entity_id: binary_sensor.eight_left_bed_presence
+        from: 'on'
+        to: 'off'
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: input_select.michel_daily_status
+          state: "Begin Morning"
+        - condition: state
+          entity_id: input_select.michel_daily_status
+          state: "Sleep"
+        - condition: numeric_state
+          entity_id: sensor.michael_days_till_work
+          above: 0
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Morning"
+
+  - alias: Michael Daily Status Begin Commute Set
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.michael_commute_set
+        from: 'off'
+        to: 'on'
+    condition:
+      condition: state
+      entity_id: input_select.michael_daily_status
+      state: 'Morning'
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Begin Commute"
+
+  - alias: Michael Daily Status Commute Set
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.michael_automatic_occupancy
+        from: 'off'
+        to: 'on'
+      - platform: zone
+        entity_id: device_tracker.michael_automatic
+        zone: zone.home
+        event: leave
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: input_select.michael_daily_status
+          state: "Begin Commute"
+        - condition: state
+          entity_id: input_select.michael_daily_status
+          state: "Morning"
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Commute"
+
+  - alias: Michael Daily Status Begin Afternoon Set
+    initial_state: True
+    trigger:
+      - platform: time
+        at: '12:00:00'
+      - platform: state
+        entity_id: calendar.michael_work_calendar
+        from: 'on'
+        to: 'off'
+        for:
+          minutes: 10
+    condition:
+      - condition: numeric_state
+        entity_id: sensor.michael_days_till_work
+        above: 0
+      - condition: time
+        after: '12:00:00'
+        before: '07:00:00'
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Begin Afternoon"
+  - alias: Michael Daily Status Afternoon Set
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: input_select.michael_daily_status
+        to: 'Begin Afternoon'
+        for:
+          minutes: 10
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Afternoon"
+
+
+  - alias: Michael Daily Status Begin Work Set
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.michael_work_set
+        from: 'off'
+        to: 'on'
+    condition:
+      condition: state
+      entity_id: input_select.michael_daily_status
+      state: "Commute"
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Begin Work"
+
+  - alias: Michael Daily Status Work Set
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: device_tracker.michael_automatic
+        to: 'Fashion Place'
+        for:
+          minutes: 3
+      - platform: state
+        entity_id: device_tracker.michael_iphone
+        to: 'Fashion Place'
+        for:
+          minutes: 3
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: input_select.michael_daily_status
+          state: "Commute"
+        - condition: state
+          entity_id: input_select.michael_daily_status
+          state: "Begin Work"
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Work"
+
+  - alias: Michael Daily Status Begin Evening Set
+    initial_state: True
+    trigger:
+      - platform: time
+        at: '19:00:00'
+      - platform: state
+        entity_id: sensor.michael_days_till_work
+    condition:
+      - condition: numeric_state
+        entity_id: sensor.michael_days_till_work
+        above: 0
+      - condition: time
+        after: '18:30:00'
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Begin Evening"
+  - alias: Michael Daily Status Afternoon Set
+    initial_state: True
+    trigger:
+      - platform: state
+        entity_id: input_select.michael_daily_status
+        to: 'Begin Evening'
+        for:
+          minutes: 15
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.michael_daily_status
+          option: "Evening"

@@ -1,0 +1,54 @@
+name: Edison
+entities: 
+  light.bathroom:     
+    state: on
+    brightness: 242
+    xy_color: [0.5268, 0.4133]
+  light.bed:     
+    state: on
+    brightness: 242
+    xy_color: [0.5266, 0.4133]
+  light.couch:     
+    state: on
+    brightness: 242
+    xy_color: [0.5266, 0.4133]
+  light.desk:     
+    state: on
+    brightness: 242
+    xy_color: [0.5268, 0.4133]
+  light.entrance:     
+    state: on
+    brightness: 242
+    xy_color: [0.5268, 0.4133]
+  light.fridge:     
+    state: on
+    brightness: 242
+  light.kitchen:     
+    state: on
+    brightness: 242
+    xy_color: [0.5268, 0.4133]
+  light.left:     
+    state: on
+    brightness: 242
+    xy_color: [0.5308, 0.3884]
+  light.oven:     
+    state: on
+    brightness: 242
+    xy_color: [0.5268, 0.4133]
+  light.porch:     
+    state: on
+    brightness: 242
+  light.right:     
+    state: on
+    brightness: 242
+    xy_color: [0.5308, 0.3884]
+  light.shower:     
+    state: on
+    brightness: 242
+    xy_color: [0.5266, 0.4133]
+  light.sink:     
+    state: on
+    brightness: 242
+    xy_color: [0.5268, 0.4133]
+  light.basement:     
+    state: off

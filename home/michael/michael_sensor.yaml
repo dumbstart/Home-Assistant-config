@@ -1,0 +1,120 @@
+camera:
+  - platform: generic
+    name: Michael Traffic Camera
+    still_image_url: "https://www.udottraffic.utah.gov/1_devices/aux{% if states.sensor.michael_work_waze is none %}110{% elif '700' in states.sensor.michael_work_waze.attributes.street %}55{% else %}110{% endif %}.jpeg"
+
+input_datetime:
+  time_michael_sleep:
+    name: Michael Sleep
+    has_date: true
+    has_time: true
+  time_michael_wake:
+    name: Michael Wake
+    has_date: true
+    has_time: true
+  time_michael_commute:
+    name: Michael Commute
+    has_date: true
+    has_time: true
+  time_michael_work:
+    name: Michael Work
+    has_date: true
+    has_time: true
+  time_michael_call_out:
+    name: Michael Call Out
+    has_date: true
+    has_time: true
+
+input_boolean:
+  michael_homekit:
+
+input_select:
+  michael_daily_status:
+    name: Michael Daily Status
+    options:
+      - Begin Sleep
+      - Sleep
+      - Begin Morning
+      - Morning
+      - Begin Commute
+      - Commute
+      - Begin Afternoon
+      - Afternoon
+      - Begin Work
+      - Work
+      - Begin Evening
+      - Evening
+      - Updating
+  michael_location_status:
+    name: Michael Location Status
+    options:
+      - Arrived At Home
+      - At Home
+      - Left Home
+      - Arrived At Work
+      - At Work
+      - Left Work
+      - Away
+
+binary_sensor:
+  - platform: template
+    sensors:
+      michael_status_to_sleep:
+        value_template: "{{ is_state('input_datetime.time_michael_sleep',states.sensor.date__time.state | string | replace(', ',' ')~':00') }}"
+      michael_status_to_wake:
+        value_template: "{{ is_state('input_datetime.time_michael_wake',states.sensor.date__time.state | string | replace(', ',' ')~':00') }}"
+      michael_status_to_commute:
+        value_template: "{{ is_state('input_datetime.time_michael_commute',states.sensor.date__time.state | string | replace(', ',' ')~':00') }}"
+      michael_status_to_work:
+        value_template: "{{ is_state('input_datetime.time_michael_work',(as_timestamp(states.sensor.date__time.state | replace(', ',' ')~':00') - 300 ) | timestamp_custom('%Y-%m-%d %H:%M:%S')) }}"
+      michael_home_occupancy:
+        value_template: "{{ is_state('input_boolean.michael_homekit','on') or is_state('device_tracker.michael_automatic','home') }}"
+        device_class: occupancy
+        delay_on:
+          minutes: 1
+        delay_off:
+          minutes: 5
+      michael_work_occupancy:
+        value_template: "{{ is_state('device_tracker.michael_iphone','Fashion Place') or is_state('device_tracker.michael_automatic','Fashion Place') }}"
+        device_class: occupancy
+        delay_on:
+          minutes: 1
+        delay_off:
+          minutes: 1
+  - platform: 'bayesian'
+    prior: 0.75
+    name: 'Michael Home Check'
+    probability_threshold: 0.90
+    observations:
+      - entity_id: 'device_tracker.michael_iphone'
+        prob_given_true: 0.6
+        prob_given_false: 0.2
+        platform: 'state'
+        to_state: 'home'
+      - entity_id: 'device_tracker.michael_ipad'
+        prob_given_true: 0.5
+        prob_given_false: 0.4
+        platform: 'state'
+        to_state: 'home'
+      - entity_id: 'sensor.michael_automatic_location'
+        prob_given_true: .8
+        platform: 'state'
+        to_state: 'Home'
+      - entity_id: 'binary_sensor.michael_work_occupancy'
+        prob_given_true: 0.2
+        platform: 'state'
+        to_state: 'off'
+      - entity_id: 'input_status.michael_daily_status'
+        prob_given_true: 0.3
+        platform: 'state'
+        to_state: 'Morning'
+
+sensor:
+  - platform: template
+    sensors:
+      michael_days_till_work:
+        value_template: "{% if states.input_datetime.time_michael_work.attributes.timestamp %}{{ ((states.input_datetime.time_michael_work.attributes.timestamp | int - as_timestamp(states.sensor.date.state~' '~states.input_datetime.time_michael_work.state.split(' ')[1])) // 86400) | int }}{% endif %}"
+      michael_commute_length:
+        value_template: "{% if not is_state('sensor.michael_days_till_work','0') %}20{% elif is_state('sensor.michael_destination','Home') and states.sensor.michael_home_waze.state %}{{ states.sensor.michael_home_waze.state }}{% elif is_state('sensor.michael_destination','Fashion Place') and states.sensor.michael_work_waze.state %}{{ states.sensor.michael_work_waze.state }}{% else %}20{% endif %}"
+      michael_destination:
+        value_template: "{% if states.calendar.michael_work_calendar.attributes.end_time is none %}Home{% elif as_timestamp(states.calendar.michael_work_calendar.attributes.end_time)- as_timestamp(states.sensor.date__time.state | replace(', ',' ')) < 129600 and is_state('binary_sensor.michael_work_occupancy','off') %}Fashion Place{% else %}Home{% endif %}"

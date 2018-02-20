@@ -1,0 +1,53 @@
+automation:
+  - alias: Turn On Bedroom TV Switch From Power
+    trigger:
+      platform: state
+      entity_id: binary_sensor.bedroom_tv_power_outlet
+      from: 'off'
+      to: 'on'
+      for:
+        seconds: 5
+    condition:
+      - condition: state
+        entity_id: switch.bedroom_tv_power
+        state: 'off'
+    action:
+      - service: switch.turn_on
+        data:
+          entity_id: switch.bedroom_tv_power
+
+  - alias: Automation For Bedroom TV Turned On
+    trigger:
+      platform: state
+      entity_id: switch.bedroom_tv_power
+      from: 'off'
+      to: 'on'
+      for:
+        seconds: 10
+    action:
+      - service: light.turn_off
+        data:
+          entity_id: light.bedroom
+
+  - alias: Turn Off Bedroom TV When Sleeping
+    trigger:
+      - platform: state
+        entity_id: sensor.eight_left_sleep_stage
+        to: "sleep"
+      - platform: state
+        entity_id: sensor.eight_right_sleep_stage
+        to: "sleep"
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.bedroom_timer
+    condition:
+      condition: state
+      entity_id: media_player.bedroom_tv
+      state: 'on'
+    action:
+      - service: media_player.turn_off
+        data:
+          entity_id: media_player.bedroom_tv
+      - service: light.turn_off
+        entity_id: light.all_lights

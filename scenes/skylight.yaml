@@ -1,0 +1,55 @@
+name: Skylight
+
+entities:
+  light.back_door:
+    state: off
+    transition: 2
+  light.sink:
+    state: on
+    brightness_pct: 100
+    color_temp: 210
+    transition: 2
+  light.shower:
+    state: on
+    brightness_pct: 100
+    color_temp: 240
+    transition: 2
+  light.bedroom:
+    state: on
+    brightness_pct: 100
+    color_temp: 220
+    transition: 2
+  light.couch:
+    state: on
+    brightness_pct: 100
+    color_temp: 204
+    transition: 2
+  light.desk:
+    state: on
+    brightness_pct: 100
+    color_temp: 230
+    transition: 2
+  light.entrance:
+    state: on
+    brightness_pct: 100
+    color_temp: 201
+    transition: 2
+  light.porch:
+    state: off
+  light.kitchen:
+    state: on
+    brightness_pct: 100
+    color_temp: 205
+    transition: 2
+  light.right:
+    state: on
+    brightness_pct: 100
+    rgb_color: [244, 231, 161]
+    transition: 2
+  light.left:
+    state: on
+    brightness_pct: 100
+    rgb_color: [254, 221, 151]
+    transition: 2
+  light.portable:
+    state: off

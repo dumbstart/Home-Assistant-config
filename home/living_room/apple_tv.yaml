@@ -1,0 +1,83 @@
+input_boolean:
+  apple_tv_stream_alert:
+
+sensor:
+  platform: template
+  sensors:
+    stream_video: 
+      value_template: "{% if states.sensor.media_extractor_sensor.state %}{{ states.sensor.media_extractor_sensor.state }}{% else %}No Video{% endif %}"
+
+script:
+  apple_tv_stream:
+    sequence:
+      - service: media_extractor.play_media
+        data_template:
+          entity_id: media_player.living_room
+          media_content_id: "{{ states.sensor.media_extractor_sensor.attributes.media_url }}"
+          media_content_type: "video"
+  apple_tv_pause:
+    sequence:
+      - service: media_player.media_pause
+        data:
+          entity_id: media_player.living_room
+  apple_tv_play:
+    sequence:
+      - service: media_player.media_play
+        data:
+          entity_id: media_player.living_room
+  apple_tv_top_menu:
+    sequence:
+      - service: remote.send_command
+        data:
+          entity_id: remote.living_room
+          command:
+            - top_menu
+          device: ''
+  apple_tv_menu:
+    sequence:
+      - service: remote.send_command
+        data:
+          entity_id: remote.living_room
+          command:
+            - menu
+          device: ''
+  apple_tv_select:
+    sequence:
+      - service: remote.send_command
+        data:
+          entity_id: remote.living_room
+          command:
+            - select
+          device: ''
+  apple_tv_right:
+    sequence:
+      - service: remote.send_command
+        data:
+          entity_id: remote.living_room
+          command:
+            - right
+          device: ''
+  apple_tv_down:
+    sequence:
+      - service: remote.send_command
+        data:
+          entity_id: remote.living_room
+          command:
+            - down
+          device: ''
+  apple_tv_left:
+    sequence:
+      - service: remote.send_command
+        data:
+          entity_id: remote.living_room
+          command:
+            - left
+          device: ''
+  apple_tv_up:
+    sequence:
+      - service: remote.send_command
+        data:
+          entity_id: remote.living_room
+          command:
+            - up
+          device: ''

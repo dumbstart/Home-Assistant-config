@@ -1,0 +1,87 @@
+input_boolean:
+  michael_driving:
+    name: Michael Driving
+
+binary_sensor:
+  platform: template
+  sensors:
+    michael_automatic_occupancy:
+      value_template: "{{ is_state('input_boolean.michael_driving','on') }}"
+
+sensor:
+  platform: template
+  sensors:
+    michael_automatic_location:
+      value_template: "{% if states.device_tracker.michael_automatic.attributes.latitude and not is_state('device_tracker.michael_automatic','unknown') %}{{ states.device_tracker.michael_automatic.state }}{% else %}Home{% endif %}"
+
+automation:
+  - alias: Michael Automatic Ignition Off
+    trigger:
+      - platform: event
+        event_type: automatic_update
+        event_data:
+          vehicle:
+            id: !secret michael_vehicle
+          type: 'trip:finished'
+      - platform: event
+        event_type: automatic_update
+        event_data:
+          vehicle:
+            id: !secret michael_vehicle
+          type: 'ignition:off'
+      - platform: template
+        value_template: "{{ (as_timestamp(states.sensor.date__time.last_updated) | int - as_timestamp(states.device_tracker.michael_automatic.last_updated) | int ) // 60 > 4 }}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.michael_driving
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.michael_driving
+
+  - alias: Michael Automatic Ignition On
+    trigger:
+      - platform: event
+        event_type: automatic_update
+        event_data:
+          type: "ignition:on"
+          vehicle:
+            id:  !secret michael_vehicle
+    condition:
+      - condition: state
+        entity_id: input_boolean.michael_driving
+        state: 'off'
+    action:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.michael_driving
+
+  - alias: Michael Automatic Travel Alert
+    trigger:
+      platform: state
+      entity_id: input_boolean.michael_driving
+      to: 'on'
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: input_select.michael_daily_status
+          state: 'Commute'
+        - condition: state
+          entity_id: input_select.michael_daily_status
+          state: 'Begin Commute'
+    action:
+      service: notify.ios_michael_iphone
+      data_template:
+        title: >
+          Work begins in {{ ( states.input_datetime.time_michael_work.attributes.timestamp | int - as_timestamp(now()) | int ) // 60 }} minutes
+        message: >
+          You have {{ ( states.input_datetime.time_michael_work.attributes.timestamp | int - as_timestamp(now()) | int ) // 60 }} minutes until your shift starts and the commute is expected to take {{ states.sensor.michael_commute_length.state | int }} minutes {% if states.sensor.michael_work_waze.state %}if you take {{ ((' '~states.sensor.michael_work_waze.attributes.street~' ') | replace(' S ', ' South ') | replace(' E ', ' East ') | replace(' N ', ' North ') | replace(' W ', ' West ')).lstrip(' ').rstrip(' ')  }}{% endif %}. (700 South and I-80 West)
+        data:
+          attachment:
+            content-type: jpeg
+          push:
+            category: camera
+          entity_id: camera.michael_traffic_camera
+

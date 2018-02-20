@@ -1,0 +1,26 @@
+automation:
+  - alias: Turn Off Entrance Light
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entrance_occupancy
+        to: 'off'
+        for:
+          seconds: 60
+    action:
+      service: light.turn_off
+      data:
+        entity_id: light.entrance
+        transition: 20
+
+
+input_boolean:
+  entrance_motion:
+    initial: off
+
+binary_sensor:
+  platform: template
+  sensors:
+    entrance_occupancy:
+      value_template: "{{ is_state('input_boolean.entrance_motion','on') }}"
+      delay_off:
+        minutes: 11

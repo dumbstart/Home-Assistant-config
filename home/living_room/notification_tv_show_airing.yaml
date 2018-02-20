@@ -1,0 +1,49 @@
+binary_sensor:
+  platform: template
+  sensors:
+    tv_show_sensor:
+      value_template: "{{ ((as_timestamp(states.calendar.tv_shows.attributes.start_time) | int - 900)| timestamp_local).lstrip('0') == states.sensor.date__time.state | string | replace(', ',' ')~':00' }}"
+      delay_off:
+        minutes: 10
+
+automation:
+  - alias: Send TV Show Notification
+    trigger:
+      platform: state
+      entity_id: binary_sensor.tv_show_sensor
+      from: 'off'
+      to: 'on'
+    action:
+      service: notify.ios_michael_iphone
+      data_template:
+        title: "{{ states.calendar.tv_shows.attributes.message.split(' - ')[0].split(' ')[:-1] | join(' ') }} Episode {{ (states.calendar.tv_shows.attributes.message.split(' - ')[0].split(' ')[-1:] | join).split('x')[1] }} '{{ states.calendar.tv_shows.attributes.message.split(' - ')[1] }}' Airs{% if not is_state('sensor.date',states.calendar.tv_shows.attributes.start_time.split(' ')[0]) %} {{ strptime(states.calendar.tv_shows.attributes.start_time, '%Y-%m-%d %H:%M:%S').strftime('%A') }}{% endif %} At {{ strptime(states.calendar.tv_shows.attributes.start_time, '%Y-%m-%d %H:%M:%S').strftime('%I:%M %p').lstrip('0') | replace(':00','') }}"
+        message: "A new episode of {{ states.calendar.tv_shows.attributes.message.split(' - ')[0].split(' ')[:-1] | join(' ') }} titled '{{ states.calendar.tv_shows.attributes.message.split(' - ')[1] }}' begins{% if not is_state('sensor.date',states.calendar.tv_shows.attributes.start_time.split(' ')[0]) %} {{ strptime(states.calendar.tv_shows.attributes.start_time, '%Y-%m-%d %H:%M:%S').strftime('%A') }}{% endif %} at {{ strptime(states.calendar.tv_shows.attributes.start_time, '%Y-%m-%d %H:%M:%S').strftime('%I:%M %p').lstrip('0') | replace(':00','') }}. In episode {{ (states.calendar.tv_shows.attributes.message.split(' - ')[0].split(' ')[-1:] | join).split('x')[1] }} of season {{ (states.calendar.tv_shows.attributes.message.split(' - ')[0].split(' ')[-1:] | join).split('x')[0] }} {{ states.calendar.tv_shows.attributes.description }}"
+  - alias: Read TV Show Notification
+    trigger:
+      platform: state
+      entity_id: binary_sensor.tv_show_sensor
+      from: 'on'
+      to: 'off'
+    condition:
+      condition: state
+      entity_id: media_player.projector
+      state: 'on'
+    action:
+      - service: script.tv_notification
+        data_template:
+          tv_message: "I wanted to let you know that {{ (states.calendar.tv_shows.attributes.message.split(' - ')[0].split(' ')[:-1] | join(' ')) }} season {{ (states.calendar.tv_shows.attributes.message.split(' - ')[0].split(' ')[-1:] | join).split('x')[0] }} episode {{ (states.calendar.tv_shows.attributes.message.split(' - ')[0].split(' ')[-1:] | join).split('x')[1] }} titled '{{states.calendar.tv_shows.attributes.message.split(' - ')[1]}}' airs{% if not is_state('sensor.date',states.calendar.tv_shows.attributes.start_time.split(' ')[0]) %} {{ strptime(states.calendar.tv_shows.attributes.start_time, '%Y-%m-%d %H:%M:%S').strftime('%A') }}{% endif %} at {{ strptime(states.calendar.tv_shows.attributes.start_time, '%Y-%m-%d %H:%M:%S').strftime('%I:%M %p').lstrip('0') | replace(':00','') }}. {% if states.calendar.tv_shows.attributes.description %}In this episode {{ states.calendar.tv_shows.attributes.description }}{% endif %}"
+
+script:
+  tv_notification:
+    sequence:
+      - condition: state
+        entity_id: media_player.projector
+        state: 'on'
+      - service: script.apple_tv_pause
+      - service: tts.amazon_polly_say
+        data_template:
+          entity_id: media_player.living_room
+          message: "{{ tv_message }}"
+      - delay:
+          seconds: 10
+      - service: script.apple_tv_play

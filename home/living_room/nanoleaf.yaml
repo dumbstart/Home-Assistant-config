@@ -1,0 +1,43 @@
+input_number:
+  nanoleaf_slider:
+    name: Brightness
+    min: 0
+    max: 100
+    step: 5
+
+input_select:
+  nanoleaf_effects:
+    name: Effects
+    options:
+      - Off
+
+sensor:
+  - platform: command_line`
+    name: Nanoleaf Current Effect
+    command: '/bin/bash /config/shell/nano.sh -e'
+    scan_interval: 300
+  - platform: command_line
+    name: Nanoleaf Current Brightness
+    command: '/bin/bash /config/shell/nano.sh -b'
+    scan_interval: 300
+
+shell_command:
+  nano_set_bright: '/bin/bash /config/shell/nano.sh -s {{ states.input_number.nanoleaf_slider.state | int }}'
+  nano_set_effect: '/bin/bash /config/shell/nano.sh -s "{{ states.input_select.nanoleaf_effects.state }}"'
+  nano_get_update: '/bin/bash /config/shell/nano.sh -u'
+  nano_effect: '/bin/bash /config/shell/nano.sh -e'
+  nano_bright: '/bin/bash /config/shell/nano.sh -b'
+  
+automation:
+  - alias: Update Nanoleaf brightness
+    trigger:
+      platform: state
+      entity_id: input_number.nanoleaf_slider
+    action:
+      service: shell_command.nano_set_bright
+  - alias: Update Nanoleaf effect
+    trigger:
+      platform: state
+      entity_id: input_select.nanoleaf_effects
+    action:
+      service: shell_command.nano_set_effect

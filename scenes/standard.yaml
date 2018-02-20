@@ -1,0 +1,54 @@
+name: Standard
+entities:
+  light.bathroom:
+    state: on
+    brightness: 254
+    xy_color: [0.4588, 0.4104]
+  light.bed:
+    state: on
+    brightness: 254
+    xy_color: [0.4586, 0.4104]
+  light.couch:
+    state: on
+    brightness: 254
+    xy_color: [0.4586, 0.4104]
+  light.desk:
+    state: on
+    brightness: 77
+    xy_color: [0.4576, 0.4099]
+  light.entrance:
+    state: on
+    brightness: 77
+    xy_color: [0.4576, 0.4099]
+  light.fridge:
+    state: on
+    brightness: 254
+  light.kitchen:
+    state: on
+    brightness: 254
+    xy_color: [0.4588, 0.4104]
+  light.left:
+    state: on
+    brightness: 254
+    xy_color: [0.4997, 0.4027]
+  light.oven:
+    state: on
+    brightness: 254
+    xy_color: [0.4588, 0.4104]
+  light.porch:
+    state: on
+    brightness: 254
+  light.right:
+    state: on
+    brightness: 254
+    xy_color: [0.4997, 0.4027]
+  light.shower:
+    state: on
+    brightness: 254
+    xy_color: [0.4586, 0.4104]
+  light.sink:
+    state: on
+    brightness: 254
+    xy_color: [0.4588, 0.4104]
+  light.basement:
+    state: off

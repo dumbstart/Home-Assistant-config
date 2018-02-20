@@ -1,0 +1,29 @@
+automation:
+  - alias: Turn Off Back Door Light
+    trigger:
+      - platform: state
+        entity_id: light.back_door
+        to: 'on'
+        for:
+          minutes: 20
+      - platform: state
+        entity_id: binary_sensor.back_door_occupancy
+        to: 'off'
+        for:
+          seconds: 60
+    action:
+      service: light.turn_off
+      data:
+        entity_id: light.back_door
+
+input_boolean:
+  back_door_motion:
+    initial: off
+
+binary_sensor:
+  platform: template
+  sensors:
+    back_door_occupancy:
+      value_template: "{{ is_state('input_boolean.back_door_motion','on') }}"
+      delay_off:
+        minutes: 11
